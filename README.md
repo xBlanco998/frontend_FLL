@@ -1,5 +1,14 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## Available Routes
+
+- `/`: Public home landing page with links to the core entities.
+- `/users`: Users module for authenticated users with `ROLE_USER`.
+- `/teams`: Public Teams module placeholder.
+- `/editions`: Public Editions module placeholder.
+- `/scientific-projects`: Public Scientific Projects module placeholder.
+- Frontend route is `/scientific-projects`, while backend resource uses `/scientificProjects`.
+
 ## Getting Started
 
 Install dependencies (only needed the first time, or when dependencies change):
