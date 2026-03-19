@@ -14,15 +14,6 @@ body:
     validations:
       required: true
   - type: textarea
-    id: input-output
-    attributes:
-      label: Input/output specification proposal
-      description: |
-        **Only if this is a new endpoint!** Propose possible input and output JSONs. The implementor should use them as a general guideline, but they can make changes if they need to.
-      placeholder: Example of the input and output JSONs here.
-    validations:
-      required: false
-  - type: textarea
     id: dod
     attributes:
       label: Definition of done
