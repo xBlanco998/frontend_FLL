@@ -57,6 +57,29 @@ test.describe("administrators delete flow", () => {
         await expect(page.locator("li", { hasText: targetAdmin.username })).not.toBeVisible();
     });
 
+    test("an error message is shown when the delete request fails", async ({ page, request }) => {
+        const targetAdmin = createTestUser("e2e-admin");
+        await createAdministratorViaApi(request, targetAdmin);
+        await page.reload();
+
+        await page.route("**/users/**", (route) => {
+            if (route.request().method() === "DELETE") {
+                return route.fulfill({ status: 500 });
+            }
+            return route.continue();
+        });
+
+        const adminCard = page.locator("li", { hasText: targetAdmin.username }).first();
+        await adminCard.getByRole("button", { name: `Delete ${targetAdmin.username}` }).click();
+
+        await expect(page.getByRole("dialog", { name: "Delete administrator" })).toBeVisible();
+        await page.getByRole("button", { name: "Delete administrator" }).click();
+
+        await expect(page.getByRole("alert")).toBeVisible();
+        await expect(page.getByRole("dialog", { name: "Delete administrator" })).toBeVisible();
+        await expect(page.locator("li", { hasText: targetAdmin.username }).first()).toBeVisible();
+    });
+
     test("pressing Escape cancels the delete dialog", async ({ page, request }) => {
         const targetAdmin = createTestUser("e2e-admin");
         await createAdministratorViaApi(request, targetAdmin);
