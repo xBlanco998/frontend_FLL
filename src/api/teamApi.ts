@@ -64,6 +64,12 @@ export class TeamsService {
         );
     }
 
+
+    async deleteTeam(id: string): Promise<void> {
+        const teamId = getSafeEncodedId(id);
+        await deleteHal(`/teams/${teamId}`, this.authStrategy);
+    }
+
     async removeTeamMember(memberUri: string): Promise<void> {
         await deleteHal(memberUri, this.authStrategy);
     }
