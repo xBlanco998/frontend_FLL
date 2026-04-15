@@ -5,7 +5,6 @@ import { Button } from '@/app/components/button';
 import { AddMemberForm } from './add-member-form';
 import { DeleteMemberDialog } from './delete-member-dialog';
 import { useTeamMembers } from '@/hooks/useTeamMembers';
-import { MAX_TEAM_MEMBERS } from '@/types/team';
 
 export function TeamMembersManager({
     teamId,

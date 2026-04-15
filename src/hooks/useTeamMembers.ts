@@ -25,8 +25,6 @@ export function useTeamMembers(teamId: string, initialMembers: User[]) {
 
             const newMember = await service.addTeamMember(teamId, { name, role });
             setMembers(prev => [...prev, newMember]);
-        } catch (e) {
-            setError('Failed to add member');
         } finally {
             setIsLoading(false);
         }
