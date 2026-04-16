@@ -35,57 +35,49 @@ function getUriLabel(resourceUri?: string, fallbackPrefix: string = "Item") {
 
 function getRoundOption(round: Round): Option | null {
     const resourceUri = round.link("self")?.href ?? round.uri;
-    const value = resourceUri;
-
-    if (value) {
-        const label =
-            round.number !== undefined ? `Round ${round.number}` : getUriLabel(resourceUri, "Round");
-        return { label, value };
+    if (!resourceUri) {
+        return null;
     }
 
-    return null;
+    const label =
+        round.number !== undefined ? `Round ${round.number}` : getUriLabel(resourceUri, "Round");
+    return { label, value: resourceUri };
 }
 
 function getCompetitionTableOption(table: CompetitionTable): Option | null {
     const resourceUri = table.link("self")?.href ?? table.uri;
-    const value = resourceUri;
-
-    if (value) {
-        return {
-            label: getUriLabel(resourceUri, "Table"),
-            value,
-        };
+    if (!resourceUri) {
+        return null;
     }
 
-    return null;
+    return {
+        label: getUriLabel(resourceUri, "Table"),
+        value: resourceUri,
+    };
 }
 
 function getRefereeOption(referee: Referee): Option | null {
     const resourceUri = referee.link("self")?.href ?? referee.uri;
-    const value = resourceUri;
-
-    if (value) {
-        return {
-            label: referee.name ?? referee.emailAddress ?? getUriLabel(resourceUri, "Referee"),
-            value,
-        };
+    if (!resourceUri) {
+        return null;
     }
 
-    return null;
+    return {
+        label: referee.name ?? referee.emailAddress ?? getUriLabel(resourceUri, "Referee"),
+        value: resourceUri,
+    };
 }
 
 function getTeamOption(team: Team): Option | null {
     const resourceUri = team.link("self")?.href ?? team.uri;
-    const value = resourceUri;
-
-    if (value) {
-        return {
-            label: team.name ?? team.id ?? getUriLabel(resourceUri, "Team"),
-            value,
-        };
+    if (!resourceUri) {
+        return null;
     }
 
-    return null;
+    return {
+        label: team.name ?? team.id ?? getUriLabel(resourceUri, "Team"),
+        value: resourceUri,
+    };
 }
 
 function compactOptions(options: Array<Option | null>) {

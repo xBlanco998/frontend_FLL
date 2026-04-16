@@ -26,6 +26,24 @@ const selectClassName =
     "focus-visible:border-ring focus-visible:ring-ring/35 focus-visible:ring-[3px] " +
     "aria-invalid:border-destructive md:text-sm disabled:pointer-events-none disabled:opacity-50";
 
+function FieldError({
+    id,
+    message,
+}: Readonly<{
+    id: string;
+    message?: string;
+}>) {
+    if (!message) {
+        return null;
+    }
+
+    return (
+        <p id={id} className="text-sm text-destructive" role="alert">
+            {message}
+        </p>
+    );
+}
+
 function EmptySelectMessage({
     label,
     hasOptions,
@@ -122,11 +140,7 @@ export default function NewMatchForm({
                             required: "Start time is required",
                         })}
                     />
-                    {errors.startTime && (
-                        <p className="text-sm text-destructive" role="alert">
-                            {errors.startTime.message}
-                        </p>
-                    )}
+                    <FieldError id="start-time-error" message={errors.startTime?.message} />
                 </div>
 
                 <div className="grid gap-2">
@@ -148,11 +162,7 @@ export default function NewMatchForm({
                             },
                         })}
                     />
-                    {errors.endTime && (
-                        <p className="text-sm text-destructive" role="alert">
-                            {errors.endTime.message}
-                        </p>
-                    )}
+                    <FieldError id="end-time-error" message={errors.endTime?.message} />
                 </div>
             </div>
 
@@ -176,11 +186,7 @@ export default function NewMatchForm({
                     ))}
                 </select>
                 <EmptySelectMessage label="rounds" hasOptions={roundOptions.length > 0} />
-                {errors.round && (
-                    <p id="round-error" className="text-sm text-destructive" role="alert">
-                        {errors.round.message}
-                    </p>
-                )}
+                <FieldError id="round-error" message={errors.round?.message} />
             </div>
 
             <div className="grid gap-2">
@@ -208,11 +214,10 @@ export default function NewMatchForm({
                     label="competition tables"
                     hasOptions={competitionTableOptions.length > 0}
                 />
-                {errors.competitionTable && (
-                    <p id="competition-table-error" className="text-sm text-destructive" role="alert">
-                        {errors.competitionTable.message}
-                    </p>
-                )}
+                <FieldError
+                    id="competition-table-error"
+                    message={errors.competitionTable?.message}
+                />
             </div>
 
             <div className="grid gap-2 sm:grid-cols-2 sm:gap-4">
@@ -235,11 +240,7 @@ export default function NewMatchForm({
                             </option>
                         ))}
                     </select>
-                    {errors.teamA && (
-                        <p id="team-a-error" className="text-sm text-destructive" role="alert">
-                            {errors.teamA.message}
-                        </p>
-                    )}
+                    <FieldError id="team-a-error" message={errors.teamA?.message} />
                 </div>
 
                 <div className="grid gap-2">
@@ -265,11 +266,7 @@ export default function NewMatchForm({
                             </option>
                         ))}
                     </select>
-                    {errors.teamB && (
-                        <p id="team-b-error" className="text-sm text-destructive" role="alert">
-                            {errors.teamB.message}
-                        </p>
-                    )}
+                    <FieldError id="team-b-error" message={errors.teamB?.message} />
                 </div>
             </div>
 
@@ -293,11 +290,7 @@ export default function NewMatchForm({
                     ))}
                 </select>
                 <EmptySelectMessage label="referees" hasOptions={refereeOptions.length > 0} />
-                {errors.referee && (
-                    <p id="referee-error" className="text-sm text-destructive" role="alert">
-                        {errors.referee.message}
-                    </p>
-                )}
+                <FieldError id="referee-error" message={errors.referee?.message} />
             </div>
 
             <Button type="submit" className="mt-2 w-full" disabled={isSubmitting || !isReadyToSubmit}>
