@@ -8,7 +8,7 @@ export interface VolunteerEntity {
     emailAddress?: string;
     phoneNumber?: string;
     type?: VolunteerRole;
-    expert?: boolean; // Mainly for referees, but can be part of the interface
+    expert?: boolean;
 }
 
 export type Volunteer = VolunteerEntity & Resource;
