@@ -102,8 +102,8 @@ export default async function MatchDetailPage(props: Readonly<MatchDetailPagePro
 
     try {
         currentUser = await new UsersService(serverAuthProvider).getCurrentUser();
-    } catch {
-        // unauthenticated — delete button will not be shown
+    } catch (e) {
+        console.error("Failed to fetch current user:", e);
     }
 
     try {
