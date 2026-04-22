@@ -153,21 +153,21 @@ export default async function MatchesPage({ searchParams }: Readonly<{ searchPar
             let nameB = match.teamB;
 
             try {
-                if (!nameA && match.link("teamA")) {
+                if (match.link("teamA")) {
                     const tA = await service.getMatchTeamA(decodeURIComponent(matchId));
-                    nameA = tA?.name ?? tA?.id ?? "Team A";
+                    nameA = tA?.name ?? tA?.id ?? nameA ?? "Team A";
                 }
             } catch (_e) {
-                nameA = "Team A";
+                if (!nameA) nameA = "Team A";
             }
 
             try {
-                if (!nameB && match.link("teamB")) {
+                if (match.link("teamB")) {
                     const tB = await service.getMatchTeamB(decodeURIComponent(matchId));
-                    nameB = tB?.name ?? tB?.id ?? "Team B";
+                    nameB = tB?.name ?? tB?.id ?? nameB ?? "Team B";
                 }
             } catch (_e) {
-                nameB = "Team B";
+                if (!nameB) nameB = "Team B";
             }
 
             return {
