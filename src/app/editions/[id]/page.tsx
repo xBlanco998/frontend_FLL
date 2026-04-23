@@ -107,6 +107,15 @@ async function fetchByEditionUri(
     return result;
 }
 
+function toMediaItem(content: MediaContent): MediaItem {
+    return {
+        uri: content.uri ?? content.link?.("self")?.href,
+        id: content.id,
+        type: content.type,
+        url: content.url,
+    };
+}
+
 function getAwardsByTeamUri(awards: Award[]): Map<string, Award[]> {
     const awardsByTeamUri = new Map<string, Award[]>();
 
@@ -265,7 +274,7 @@ export default async function EditionDetailPage(props: Readonly<EditionDetailPag
                             {mediaError && <ErrorAlert message={mediaError} />}
 
                             {!mediaError && mediaContents.length > 0 && (
-                                <MediaSection mediaContents={mediaContents as MediaItem[]} />
+                                <MediaSection mediaContents={mediaContents.map(toMediaItem)} />
                             )}
 
                             {!mediaError && mediaContents.length === 0 && (
