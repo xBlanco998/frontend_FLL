@@ -6,6 +6,7 @@ import EmptyState from "@/app/components/empty-state";
 import ErrorAlert from "@/app/components/error-alert";
 import PageShell from "@/app/components/page-shell";
 import PaginationControls from "@/app/components/pagination-controls";
+import TeamDeleteSection from "./[id]/team-delete-section";
 import { serverAuthProvider } from "@/lib/authProvider";
 import { isAdmin } from "@/lib/authz";
 import { getEncodedResourceId } from "@/lib/halRoute";
@@ -28,14 +29,8 @@ function getTeamKey(team: Team, index: number) {
 }
 
 function getTeamErrorMessage(error: unknown) {
-    if (error instanceof ApiError) {
-        return parseErrorMessage(error);
-    }
-
-    if (error instanceof Error) {
-        return error.message;
-    }
-
+    if (error instanceof ApiError) return parseErrorMessage(error);
+    if (error instanceof Error) return error.message;
     return parseErrorMessage(error);
 }
 
@@ -71,7 +66,9 @@ function TeamCard({ team }: Readonly<{ team: Team }>) {
 
 type PageSearchParams = Promise<Record<string, string | string[] | undefined>>;
 
-export default async function TeamsPage({ searchParams }: Readonly<{ searchParams: PageSearchParams }>) {
+export default async function TeamsPage({
+    searchParams,
+}: Readonly<{ searchParams: PageSearchParams }>) {
     const params = await searchParams;
     const yearParam = params.year;
     const year = Array.isArray(yearParam) ? yearParam[0] : yearParam;
@@ -85,13 +82,8 @@ export default async function TeamsPage({ searchParams }: Readonly<{ searchParam
 
     try {
         currentUser = await new UsersService(serverAuthProvider).getCurrentUser();
-    } catch (error) {
+    } catch {
         currentUser = null;
-        if (error instanceof AuthenticationError || (error instanceof ApiError && error.statusCode === 403)) {
-            console.warn("Current user is not authorized to access admin actions on the teams page.");
-        } else {
-            console.error("Failed to fetch current user on the teams page:", error);
-        }
     }
 
     try {
@@ -108,7 +100,6 @@ export default async function TeamsPage({ searchParams }: Readonly<{ searchParam
             teams = result.items;
         }
     } catch (e) {
-        console.error("Failed to fetch teams:", e);
         error = getTeamErrorMessage(e);
     }
 
@@ -116,50 +107,58 @@ export default async function TeamsPage({ searchParams }: Readonly<{ searchParam
         <PageShell
             eyebrow="Team management"
             title="Teams"
-            description="Browse the teams currently registered in the FIRST LEGO League platform."
-            heroAside={isAdmin(currentUser) ? (
-                <Link href="/teams/new" className={buttonVariants({ variant: "default", size: "sm" })}>
-                    New Team
-                </Link>
-            ) : undefined}
+            description="Browse teams."
+            heroAside={
+                isAdmin(currentUser) ? (
+                    <Link
+                        href="/teams/new"
+                        className={buttonVariants({ variant: "default", size: "sm" })}
+                    >
+                        New Team
+                    </Link>
+                ) : undefined
+            }
         >
             <div className="space-y-6">
-                <div className="space-y-3">
-                    <div className="page-eyebrow">Registered teams</div>
-                    <h2 className="section-title">Competition roster</h2>
-                    <p className="section-copy max-w-3xl">
-                        Explore the teams in the system, including their city, category and registration metadata.
-                    </p>
-                </div>
-
                 {error && <ErrorAlert message={error} />}
 
                 {!error && teams.length === 0 && (
-                    <EmptyState
-                        title="No teams found"
-                        description="There are currently no teams available to display."
-                    />
+                    <EmptyState title="No teams found" description="No teams." />
                 )}
 
                 {!error && teams.length > 0 && (
                     <>
                         <ul className="list-grid">
                             {teams.map((team, index) => {
-                                const teamId = getEncodedResourceId(team.uri);
+                                const teamId = team.uri
+                                    ? getEncodedResourceId(team.uri)
+                                    : team.id ?? null;
+
                                 const href = teamId ? `/teams/${teamId}${yearQuery}` : null;
+
                                 return (
                                     <li key={getTeamKey(team, index)}>
                                         {href ? (
-                                            <Link href={href} className="block h-full transition hover:bg-zinc-50 dark:hover:bg-zinc-900 group">
+                                            <Link href={href} className="block hover:bg-zinc-50">
                                                 <TeamCard team={team} />
                                             </Link>
                                         ) : (
                                             <TeamCard team={team} />
                                         )}
+
+                                        {isAdmin(currentUser) && teamId && (
+                                            <div className="mt-2">
+                                                <TeamDeleteSection
+                                                    teamId={teamId}
+                                                    teamName={getTeamDisplayName(team)}
+                                                />
+                                            </div>
+                                        )}
                                     </li>
                                 );
                             })}
                         </ul>
+
                         {!year && (
                             <PaginationControls
                                 currentPage={urlPage}
