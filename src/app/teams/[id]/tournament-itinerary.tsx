@@ -24,7 +24,11 @@ export default function TournamentItinerary({ teamName, editionYear, schedule }:
     const handleDownloadPdf = () => {
         const originalTitle = document.title;
         const yearSuffix = editionYear ? `_${editionYear}` : "";
-        document.title = `${teamName.replace(/\s+/g, "_")}_Schedule${yearSuffix}`;
+        const safeTeamName = teamName
+            .trim()
+            .replace(/[\\/:*?"<>|]+/g, "")
+            .replace(/\s+/g, "_");
+        document.title = `${safeTeamName}_Schedule${yearSuffix}`;
         window.print();
         setTimeout(() => {
             document.title = originalTitle;

@@ -58,6 +58,7 @@ export default async function TeamDetailPage(props: Readonly<TeamDetailPageProps
     let error: string | null = null;
     let membersError: string | null = null;
     let scientificProjectsError: string | null = null;
+    let matchesError: string | null = null;
 
     try {
         currentUser = await userService.getCurrentUser().catch(() => null);
@@ -83,7 +84,7 @@ export default async function TeamDetailPage(props: Readonly<TeamDetailPageProps
             teamDisplayName
                 ? scientificProjectsService.getScientificProjectsByTeamName(teamDisplayName)
                 : Promise.resolve([] as ScientificProject[]),
-            matchesService.getMatches().catch(() => [] as Match[]),
+            matchesService.getMatches(),
             editionUri ? editionsService.getEditionByUri(editionUri).catch(() => null) : Promise.resolve(null)
         ]);
 
@@ -110,8 +111,14 @@ export default async function TeamDetailPage(props: Readonly<TeamDetailPageProps
         if (matchesResult.status === "fulfilled") {
             const allMatches = matchesResult.value;
             
+            const candidateMatches = allMatches.filter((m) => {
+                const teamAHref = m.link("teamA")?.href;
+                const teamBHref = m.link("teamB")?.href;
+                return teamAHref?.endsWith(`/${id}`) || teamBHref?.endsWith(`/${id}`);
+            });
+            
             const resolvedMatches = await Promise.all(
-                allMatches.map(async (m) => {
+                candidateMatches.map(async (m) => {
                     const matchIdStr = m.uri ? m.uri.split("/").pop() : String(m.id);
                     if (!matchIdStr) return { m, hasTeam: false, table: "Unknown" };
                     
@@ -158,6 +165,8 @@ export default async function TeamDetailPage(props: Readonly<TeamDetailPageProps
                 round: r.round
             }));
             matches = teamMatchesData.map(r => r.match);
+        } else {
+            scientificProjectsError = parseErrorMessage(matchesResult.reason);
         }
     }
 
@@ -310,6 +319,7 @@ export default async function TeamDetailPage(props: Readonly<TeamDetailPageProps
                         <h2 id="tournament-itinerary-heading" className="mb-4 text-xl font-semibold print:hidden">
                             Tournament Itinerary
                         </h2>
+                        {matchesError && (<ErrorAlert message={`Could not load matches. ${matchesError}`} />)}
                         <TournamentItinerary
                             teamName={teamDisplayName ?? "Team"}
                             editionYear={editionYearStr}
