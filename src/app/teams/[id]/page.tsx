@@ -58,7 +58,7 @@ export default async function TeamDetailPage(props: Readonly<TeamDetailPageProps
     let error: string | null = null;
     let membersError: string | null = null;
     let scientificProjectsError: string | null = null;
-    let matchesError: string | null = null;
+    const matchesError: string | null = null;
 
     try {
         currentUser = await userService.getCurrentUser().catch(() => null);
